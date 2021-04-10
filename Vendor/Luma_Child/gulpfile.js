@@ -23,8 +23,8 @@ var config = {
 
 };
 
-var vendorName = 'Ponderosa';
-var themeName = 'swallow_dental';
+var vendorName = 'Vendor';
+var themeName = 'Luma_Child';
 var webPath = 'web/';
 var rootPath = '../../../../../pub/static/frontend/' + vendorName + '/' + themeName + '/en_GB/';
 
@@ -88,8 +88,8 @@ gulp.task('images', function() {
 });
 
 // Default task
-gulp.task('default', [], function() {
-    gulp.start('css', 'js', 'images');
+gulp.task('default', async function() {
+    gulp.series('css', 'js', 'images');
 });
 
 
@@ -99,13 +99,13 @@ gulp.task('watch', function() {
     livereload.listen();
 
     // Watch .less files
-    gulp.watch(webPath + 'scss/**/*.scss', ['css']);
+    gulp.watch(webPath + 'scss/**/*.scss', gulp.series('css'));
 
     // Watch .js files
-    gulp.watch(webPath + 'js/**/*.js', ['js']);
+    gulp.watch(webPath + 'js/**/*.js', gulp.series('js'));
 
     // Watch image files
-    gulp.watch(webPath + 'images/**/*', ['images']);
+    gulp.watch(webPath + 'images/**/*', gulp.series('images'));
 
     // Create LiveReload server
     var server = livereload();
