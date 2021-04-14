@@ -52,14 +52,14 @@ gulp.task('css', function() {
 
 // JS
 gulp.task('js', function() {
-    return gulp.src(webPath + 'js/custom/_main.js')
-      // uglify and minify commands
-      .pipe(concat('script.js'))
-      .pipe(uglify())
-      .pipe(gulp.dest(webPath + 'js')) // <- Destination to one location
-      .pipe(gulp.dest(rootPath + 'js')) // <- Destination to another location
-      .pipe(livereload())
-      .pipe(notify({ message: 'Successfully compiled JavaScript' }))
+    var stream = gulp.src(webPath + 'js/custom/_main.js')
+    .pipe(concat('script.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest(webPath + 'js'))
+    .pipe(gulp.dest(rootPath + 'js'))
+    .pipe(livereload())
+    .pipe(notify({ message: 'Successfully compiled JavaScript' }))
+    return stream;
 });
 
 // Images
@@ -75,7 +75,8 @@ gulp.task('images', function() {
 // Default task
 
 gulp.task('default', async function() {
-    gulp.series('css', 'js', 'images');
+    gulp.series('css', 'js');
+    //gulp.series('css')
 });
 
 
@@ -89,7 +90,7 @@ gulp.task('watch', function() {
     gulp.watch(webPath + 'scss/**/*.scss', gulp.series('css'));
 
     // Watch .js files
-    gulp.watch(webPath + 'js/**/*.js', gulp.series('js'));
+    gulp.watch(webPath + 'js/custom/*.js', gulp.series('js'));
 
     // Watch image files
     gulp.watch(webPath + 'images/**/*', gulp.series('images'));
@@ -98,7 +99,7 @@ gulp.task('watch', function() {
     var server = livereload();
 
     // Watch any files in , reload on change
-    gulp.watch([webPath + 'css/style.css', webPath + 'images/!**!/!*']).on('change', function(file) {
+    gulp.watch([webPath + 'css/style.css', webPath + 'images/!**!/!*', webPath + 'js/custom/*.js']).on('change', function(file) {
         server.changed(file.path);
     });
     
