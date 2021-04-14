@@ -1,1 +1,1 @@
-define(["jquery"],function(e){"use strict";e(document).ready(function(e){console.log("jq")})});
+define(["jquery"],function(e){"use strict";e(document).ready(function(e){console.log("jQuery Ready Here ss")})});

@@ -18,11 +18,12 @@ var config = {
     // We recommend to use the Chrome extension for LiveReload
     appendLiveReload: false,
     // Should CSS & JS be compressed?
-    minifyCss: true
+    minifyCss: true,
+    uglifyJS: true
 
 };
 
-var vendorName = 'Vendor';
+var vendorName = 'Asos';
 var themeName = 'Luma_Child';
 var webPath = 'web/';
 var rootPath = '../../../../../pub/static/frontend/' + vendorName + '/' + themeName + '/en_GB/';
@@ -51,15 +52,54 @@ gulp.task('css', function() {
 });
 
 // JS
-gulp.task('js', function() {
-    var stream = gulp.src(webPath + 'js/custom/_main.js')
-    .pipe(concat('script.js'))
-    .pipe(uglify())
-    .pipe(gulp.dest(webPath + 'js'))
-    .pipe(gulp.dest(rootPath + 'js'))
-    .pipe(livereload())
-    .pipe(notify({ message: 'Successfully compiled JavaScript' }))
-    return stream;
+gulp.task('js-theme', function() {
+    /* Here you need to append your custom codes placed on js/custom folder */
+    var scripts = [
+        webPath + 'js/custom/_main.js',
+    ];
+
+    if (config.appendLiveReload === true) {
+        scripts.push(webPath + 'js/livereload.js');
+    }
+
+    var stream = gulp
+        .src(webPath + 'js/custom/_main.js')
+        .pipe(concat('script.js'));
+
+    if (config.uglifyJS === true) {
+        stream.pipe(uglify());
+    }
+
+    stream.pipe(gulp.dest(webPath + 'js'));
+    stream.pipe(livereload());
+
+    return stream.pipe(notify({ message: 'Successfully compiled theme script JavaScript' }));
+});
+
+// JS
+gulp.task('js-static', function() {
+    /* Here you need to append your custom codes placed on js/custom folder */
+    var scripts = [
+        webPath + 'js/custom/_main.js',
+    ];
+
+    if (config.appendLiveReload === true) {
+        scripts.push(webPath + 'js/livereload.js');
+    }
+
+    var stream = gulp
+        .src(webPath + 'js/custom/_main.js')
+        .pipe(concat('script.js'));
+
+    if (config.uglifyJS === true) {
+        stream.pipe(uglify());
+    }
+
+
+    stream.pipe(gulp.dest(rootPath + 'js'));
+    stream.pipe(livereload());
+
+    return stream.pipe(notify({ message: 'Successfully compiled static JavaScript' }));
 });
 
 // Images
@@ -68,17 +108,8 @@ gulp.task('images', function() {
         .src(webPath + 'images/**/*')
         .pipe(gulp.dest(webPath + 'images'))
         .pipe(gulp.dest(rootPath + 'images'))
-        .pipe(livereload())
         .pipe(notify({ message: 'Successfully processed image' }));
 });
-
-// Default task
-
-gulp.task('default', async function() {
-    gulp.series('css', 'js');
-    //gulp.series('css')
-});
-
 
 
 // Watch
@@ -90,17 +121,17 @@ gulp.task('watch', function() {
     gulp.watch(webPath + 'scss/**/*.scss', gulp.series('css'));
 
     // Watch .js files
-    gulp.watch(webPath + 'js/custom/*.js', gulp.series('js'));
+    gulp.watch(webPath + 'js/custom/*.js', gulp.series('js-theme', 'js-static'));
 
     // Watch image files
-    gulp.watch(webPath + 'images/**/*', gulp.series('images'));
+    //gulp.watch(webPath + 'images/**/*', gulp.series('images'));
 
     // Create LiveReload server
     var server = livereload();
 
     // Watch any files in , reload on change
-    gulp.watch([webPath + 'css/style.css', webPath + 'images/!**!/!*', webPath + 'js/custom/*.js']).on('change', function(file) {
+    gulp.watch([webPath + 'css/style.css', webPath + 'images/!**!/!*']).on('change', function(file) {
         server.changed(file.path);
     });
-    
+
 });
