@@ -18,8 +18,7 @@ var config = {
     // We recommend to use the Chrome extension for LiveReload
     appendLiveReload: false,
     // Should CSS & JS be compressed?
-    minifyCss: true,
-    uglifyJS: true
+    minifyCss: true
 
 };
 
@@ -53,28 +52,14 @@ gulp.task('css', function() {
 
 // JS
 gulp.task('js', function() {
-    /* Here you need to append your custom codes placed on js/custom folder */
-    var scripts = [
-        webPath + 'js/custom/_main.js',
-    ];
-
-    if (config.appendLiveReload === true) {
-        scripts.push(webPath + 'js/livereload.js');
-    }
-
-    var stream = gulp
-        .src(scripts)
-        .pipe(concat('script.js'));
-
-    if (config.uglifyJS === true) {
-        stream.pipe(uglify());
-    }
-
-    stream.pipe(gulp.dest(webPath + 'js'));
-    stream.pipe(gulp.dest(rootPath + 'js'));
-    stream.pipe(livereload());
-
-    return stream.pipe(notify({ message: 'Successfully compiled JavaScript' }));
+    return gulp.src(webPath + 'js/custom/_main.js')
+      // uglify and minify commands
+      .pipe(concat('script.js'))
+      .pipe(uglify())
+      .pipe(gulp.dest(webPath + 'js')) // <- Destination to one location
+      .pipe(gulp.dest(rootPath + 'js')) // <- Destination to another location
+      .pipe(livereload())
+      .pipe(notify({ message: 'Successfully compiled JavaScript' }))
 });
 
 // Images
@@ -88,9 +73,11 @@ gulp.task('images', function() {
 });
 
 // Default task
+
 gulp.task('default', async function() {
     gulp.series('css', 'js', 'images');
 });
+
 
 
 // Watch
@@ -114,5 +101,5 @@ gulp.task('watch', function() {
     gulp.watch([webPath + 'css/style.css', webPath + 'images/!**!/!*']).on('change', function(file) {
         server.changed(file.path);
     });
-
+    
 });
